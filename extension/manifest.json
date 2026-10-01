@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "CD Splitter",
+  "version": "0.2",
+  "description": "Searches for train connections and prices on cd.cz using your active session.",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["*://*.cd.cz/*"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://www.cd.cz/spojeni-a-jizdenka/spojeni-tam/*", "*://www.cd.cz/en/spojeni-a-jizdenka/spojeni-tam/*"],
+      "js": ["config.js", "parser.js", "api.js", "ui.js", "content.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
