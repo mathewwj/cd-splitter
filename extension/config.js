@@ -39,7 +39,6 @@ const CONFIG = Object.freeze({
     API: {
         search:       "/spojeni-a-jizdenka/api-hp/",
         price:        "/spojeni-a-jizdenka/GetConnListPrice/",
-        passengerInfo: "/wsapi/api/passenger/GetMyPerson?lang=cs",
     },
 
     /** Default passenger label when user is not logged in. */

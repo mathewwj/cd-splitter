@@ -87,7 +87,7 @@ function findEligibleTrains(connections) {
  * Run sequential segment searches for every matched train, compute the
  * total split price, and inject buttons into the DOM.
  */
-async function processSplitPrices(matchedTrains, model, passengerNickname) {
+async function processSplitPrices(matchedTrains, model, passengersArray) {
     const segments = getSegments(model.searchFrom);
 
     for (const match of matchedTrains) {
@@ -102,7 +102,7 @@ async function processSplitPrices(matchedTrains, model, passengerNickname) {
         for (const seg of segments) {
             const time  = addMinutes(depTime, seg.timeOffsetMinutes);
             const price = await fetchSegmentPrice(
-                seg.from, seg.to, model.searchDate, time, passengerNickname, trainNum
+                seg.from, seg.to, model.searchDate, time, passengersArray, trainNum
             );
             prices.push(price);
 
@@ -112,7 +112,7 @@ async function processSplitPrices(matchedTrains, model, passengerNickname) {
                 to:   seg.to,
                 date: model.searchDate,
                 time,
-                passengerNickname,
+                passengersArray,
                 price,
             });
         }
@@ -159,8 +159,17 @@ async function main() {
 
     console.log(`${CONFIG.LOG_PREFIX}: 🎯 ${matchedTrains.length} eligible train(s). Starting price lookups…`);
 
-    const passengerNickname = await fetchPassengerNickname();
-    await processSplitPrices(matchedTrains, model, passengerNickname);
+    // Extract exact passengers configuration from the search form
+    const searchFormModel = extractSearchFormModelFromPage();
+    let passengersArray = [{ nickname: CONFIG.DEFAULT_PASSENGER }];
+    if (searchFormModel && searchFormModel.passengers && searchFormModel.passengers.passengers) {
+        passengersArray = searchFormModel.passengers.passengers;
+        console.log(`${CONFIG.LOG_PREFIX}: Loaded passengers from search params:`, passengersArray);
+    } else {
+        console.warn(`${CONFIG.LOG_PREFIX}: searchFormModel or passengers not found, falling back to default.`);
+    }
+
+    await processSplitPrices(matchedTrains, model, passengersArray);
 
     console.log(`${CONFIG.LOG_PREFIX}: Done.`);
 }

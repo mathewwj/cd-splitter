@@ -8,24 +8,6 @@
  */
 
 /**
- * Fetch the logged-in user's passenger alias, falling back to a default.
- *
- * @returns {Promise<string>} passenger nickname for use in search payloads
- */
-async function fetchPassengerNickname() {
-    try {
-        const res  = await fetch(CONFIG.API.passengerInfo);
-        const json = await res.json();
-        if (json.logged && json.passengers && json.passengers.length > 0) {
-            return json.passengers[0].alias;
-        }
-    } catch (e) {
-        console.warn(`${CONFIG.LOG_PREFIX}: Could not fetch passenger profile`, e);
-    }
-    return CONFIG.DEFAULT_PASSENGER;
-}
-
-/**
  * Add (or subtract) minutes from a "HH:MM" time string.
  * A 5-minute safety buffer is subtracted so the search window starts early
  * enough to guarantee the target train appears in the results.
@@ -58,11 +40,11 @@ function addMinutes(timeStr, minutes) {
  * @param {string} to               — destination station name
  * @param {string} date             — search date, e.g. "25.9.2026"
  * @param {string} time             — departure time, e.g. "14:02"
- * @param {string} passengerNickname — passenger label for the search payload
+ * @param {Array} passengersArray   — array of passenger objects from original search
  * @param {string} targetTrainNum   — train number to look for in results
  * @returns {Promise<number|null>} price in CZK, or null on failure
  */
-async function fetchSegmentPrice(from, to, date, time, passengerNickname, targetTrainNum) {
+async function fetchSegmentPrice(from, to, date, time, passengersArray, targetTrainNum) {
     console.log(`[Segment Search] ${from} → ${to} | train ${targetTrainNum} | dep ~${time}`);
 
     try {
@@ -75,7 +57,7 @@ async function fetchSegmentPrice(from, to, date, time, passengerNickname, target
             isAdvanced: false,
             doSearch: true,
             Class: 2,
-            passengers: [{ nickname: passengerNickname }],
+            passengers: passengersArray,
         };
 
         const searchResp = await fetch(CONFIG.API.search, {

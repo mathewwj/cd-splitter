@@ -20,7 +20,7 @@ function openSegmentInNewTab(segment) {
         isAdvanced: false,
         doSearch: true,
         Class: 2,
-        passengers: [{ nickname: segment.passengerNickname }],
+        passengers: segment.passengersArray,
     };
 
     const form  = document.createElement("form");
