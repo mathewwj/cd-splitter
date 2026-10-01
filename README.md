@@ -4,6 +4,10 @@ A smart Chrome extension that automatically finds cheaper, split-ticket train fa
 
 By splitting the route into optimal segments and factoring in regional student discounts, CD Splitter can significantly reduce the overall ticket price compared to a direct international ticket.
 
+<p align="center">
+  <img src="./assets/showcase.png" alt="CD Splitter Showcase" width="100%">
+</p>
+
 ## ✨ Features
 
 - **Automated Price Comparison:** Automatically runs in the background when searching for connections between Brno and Bratislava.
